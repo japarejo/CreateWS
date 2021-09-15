@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import io.spring.guides.gs_producing_web_service.GetCountryRequest;
+import io.spring.guides.gs_producing_web_service.GetCountryResponse;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -29,6 +30,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.util.ClassUtils;
 import org.springframework.ws.client.core.WebServiceTemplate;
+
+import com.example.producingwebservice.client.CountryWebServiceClient;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class ProducingWebServiceApplicationIntegrationTests {
@@ -45,12 +48,12 @@ public class ProducingWebServiceApplicationIntegrationTests {
 	}
 
 	@Test
-	public void testSendAndReceive() {
-		WebServiceTemplate ws = new WebServiceTemplate(marshaller);
+	public void testSendAndReceive() {		
 		GetCountryRequest request = new GetCountryRequest();
 		request.setName("Spain");
-
-		assertThat(ws.marshalSendAndReceive("http://localhost:"
-				+ port + "/ws", request) != null);
+		CountryWebServiceClient client=new CountryWebServiceClient("japarejo", "claveSecreta",port);
+		GetCountryResponse response=client.getCountry(request);
+		assertThat(response!=null);
+		assertThat(response.getCountry().getName().contentEquals("Spain"));
     }
 }
